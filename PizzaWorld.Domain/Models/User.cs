@@ -3,13 +3,11 @@ using PizzaWorld.Domain.Abstracts;
 
 namespace PizzaWorld.Domain.Models
 {
-
     public class User : AEntity
     {
-        public List<Order> Orders { get; set; }
-
+        public string Name { get; set; }
         public Store SelectedStore { get; set; }
-
+        public List<Order> Orders { get; set; }
         public User()
         {
             Orders = new List<Order>();
@@ -19,6 +17,5 @@ namespace PizzaWorld.Domain.Models
         {
             return $"I have selected this store: {SelectedStore}";
         }
-
     }
 }
