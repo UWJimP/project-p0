@@ -1,9 +1,13 @@
+using PizzaWorld.Domain.Abstracts;
+
 namespace PizzaWorld.Domain.Models
 {
 
-    public class Pizza
+    public class Pizza : AEntity
     {
-        //Start
+        public string Crust { get; set; }
+
+        public string Size { get; set; }
 
     }
 }

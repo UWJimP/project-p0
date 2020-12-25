@@ -10,6 +10,7 @@ namespace PizzaWorld.Client
     {
 
         private static readonly ClientSingleton _client = ClientSingleton.Instance;
+        private static readonly SqlClient _sql = new SqlClient();
 
         public Program()
         {
@@ -25,17 +26,24 @@ namespace PizzaWorld.Client
             return _client.Stores;
         }
 
+        static void PrintAllStoresWithEF()
+        {
+            foreach(var store in _sql.ReadStores())
+            {
+                System.Console.WriteLine(store);
+            }
+        }
+
         static void UserView()
         {
             var user = new User();
 
-            PrintAllStores();
+            PrintAllStoresWithEF();
             user.SelectedStore = _client.SelectStore();
             Console.WriteLine(user);
             user.SelectedStore.CreateOrder();
             var order = user.SelectedStore.Orders.Last();
             user.Orders.Add(order);
-            order
         }
 
         static void PrintAllStores()
