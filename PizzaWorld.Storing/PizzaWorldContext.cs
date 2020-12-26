@@ -13,7 +13,7 @@ namespace PizzaWorld.Storing
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            builder.UseSqlServer("Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorldBuz;User ID=sqladmin;Password=Momo0Kagami;");
+            builder.UseSqlServer("Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorldBuz;User ID=sqladmin;Password={};");
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -22,18 +22,24 @@ namespace PizzaWorld.Storing
             builder.Entity<User>().HasKey(user => user.EntityID);
             builder.Entity<Pizza>().HasKey(pizza => pizza.EntityID);
             builder.Entity<Order>().HasKey(order => order.EntityID);
-            SeedData(builder);
+            SeedStoreData(builder);
         }
-
-        private void SeedData(ModelBuilder builder)
+        private void SeedStoreData(ModelBuilder builder)
         {
             builder.Entity<Store>().HasData(new List<Store>()
-                {
-                    new Store { EntityID = 2, Name = "Store1" },
-                    new Store { EntityID = 3, Name = "Store2" },
-                    new Store { EntityID = 4, Name = "Store3" }
-                }
-            );
+            {
+                new Store { EntityID = 1, Name = "Domino's" },
+                new Store { EntityID = 2, Name = "Pizza Hut" },
+                new Store { EntityID = 3, Name = "Papa John's" },
+                new Store { EntityID = 4, Name = "Generic Pizza Place" }
+            });
+        }
+        private void SeedPizzaData(ModelBuilder builder)
+        {
+            builder.Entity<Pizza>().HasData(new List<Pizza>()
+            {
+                new Pizza {EntityID = 1}
+            });
         }
     }
 
