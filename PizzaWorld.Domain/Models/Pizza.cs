@@ -10,32 +10,49 @@ namespace PizzaWorld.Domain.Models
         public List<Topping> Toppings { get; set; }
         public Pizza()
         {
-            Toppings = new List<Topping>()
-            { 
-                new Topping("Cheese", 3d),
-                new Topping("Tomato Sauce", 2d)
-            };
+            DefaultToppings();
         }
         public double GetTotalCost()
         {
-            double total = Crust.Price + Size.Price;
-            if(Toppings != null)
+            double total = 1d; //Base price of pizza without anything.
+            if(Crust != null)
             {
-                foreach(var topping in Toppings)
-                {
-                    total += topping.Price;
-                }
+                total += Crust.Price;
+            }
+            if(Size != null)
+            {
+                total += Size.Price;
+            }
+            if(Toppings == null)
+            {
+                DefaultToppings();
+            }
+            foreach(var topping in Toppings)
+            {
+                total += topping.Price;
             }
             return total;
         }
         public bool AddTopping(Topping topping)
         {
-            if(Toppings != null && Toppings.Count < 5)
+            if(Toppings == null)
+            {
+                DefaultToppings();
+            }
+            if(Toppings.Count < 5)
             {
                 Toppings.Add(topping);
                 return true;
             }
             return false;
+        }
+        private void DefaultToppings()
+        {
+            Toppings = new List<Topping>()
+            { 
+                new Topping("Cheese", 3d),
+                new Topping("Tomato Sauce", 2d)
+            };
         }
     }
 }

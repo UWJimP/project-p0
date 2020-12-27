@@ -12,6 +12,10 @@ namespace PizzaWorld.Domain.Models
         }
         public bool AddPizza(Pizza pizza)
         {
+            if(Pizzas != null)
+            {
+                Pizzas = new List<Pizza>();
+            }
             if(pizza.GetTotalCost() + GetTotalCost() <= 250d && Pizzas.Count < 50)
             {
                 Pizzas.Add(pizza);
@@ -22,6 +26,10 @@ namespace PizzaWorld.Domain.Models
         public double GetTotalCost()
         {
             double cost = 0;
+            if(Pizzas != null)
+            {
+                Pizzas = new List<Pizza>();
+            }
             foreach(var pizza in Pizzas)
             {
                 cost += pizza.GetTotalCost();
