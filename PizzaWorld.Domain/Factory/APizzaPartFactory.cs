@@ -23,13 +23,13 @@ namespace PizzaWorld.Domain.Factory
             switch(crust.ToLower())
             {
                 case "thin":
-                    return new Crust("thin", 0.5d);
+                    return new Crust("thin", 1.5d);
                 case "pan":
-                    return new Crust("pan", 0.75d);
+                    return new Crust("pan", 1.75d);
                 case "stuffed":
-                    return new Crust("stuffed", 1d);
+                    return new Crust("stuffed", 2d);
                 default:
-                    return new Crust("regular", 0d);
+                    return new Crust("regular", 1d);
             }
         }
         public static Topping MakeTopping(string topping)
@@ -48,12 +48,10 @@ namespace PizzaWorld.Domain.Factory
                     return new Topping("onion");
                 case "mushroom":
                     return new Topping("mushroom");
-                case "bell pepper":
-                    return new Topping("bell pepper");
                 case "olive":
                     return new Topping("olive");
                 case "sauce":
-                    return new Topping("sauce", 0);
+                    return new Topping("sauce", 2d);
                 default:
                     return new Topping("cheese", 1d);
             }

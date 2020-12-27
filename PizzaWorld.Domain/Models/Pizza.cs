@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using PizzaWorld.Domain.Abstracts;
+using PizzaWorld.Domain.Factory;
 
 namespace PizzaWorld.Domain.Models
 {
@@ -10,23 +12,15 @@ namespace PizzaWorld.Domain.Models
         public List<Topping> Toppings { get; set; }
         public Pizza()
         {
+            Crust = APizzaPartFactory.MakeCrust("regular");
+            Size = APizzaPartFactory.MakeSize("small");
             DefaultToppings();
         }
         public double GetTotalCost()
         {
             double total = 1d; //Base price of pizza without anything.
-            if(Crust != null)
-            {
-                total += Crust.Price;
-            }
-            if(Size != null)
-            {
-                total += Size.Price;
-            }
-            if(Toppings == null)
-            {
-                DefaultToppings();
-            }
+            total += Crust.Price;
+            total += Size.Price;
             foreach(var topping in Toppings)
             {
                 total += topping.Price;
@@ -50,8 +44,8 @@ namespace PizzaWorld.Domain.Models
         {
             Toppings = new List<Topping>()
             { 
-                new Topping("Cheese", 3d),
-                new Topping("Tomato Sauce", 2d)
+                APizzaPartFactory.MakeTopping("cheese"),
+                APizzaPartFactory.MakeTopping("sauce")
             };
         }
     }
