@@ -11,11 +11,12 @@ namespace PizzaWorld.Storing
 
         public DbSet<Store> Stores { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Size> Sizes { get; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             //var connection = "Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorldBuz;User ID=sqladmin;Password=;";
-            //var connection = "Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorld2;User ID=sqladmin;Password=;";
+            var connection = "Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorld2;User ID=sqladmin;Password=;";
             builder.UseSqlServer(connection);
         }
 
@@ -29,13 +30,11 @@ namespace PizzaWorld.Storing
             builder.Entity<Size>().HasKey(size => size.EntityID);
             builder.Entity<Order>().HasKey(order => order.EntityID);
             
-
-            SeedPizzaData(builder);
+            //SeedPizzaData(builder);
             SeedStoreData(builder);
             SeedToppingData(builder);
             SeedSizeData(builder);
             SeedCrustData(builder);
-            
         }
         private void SeedToppingData(ModelBuilder builder)
         {

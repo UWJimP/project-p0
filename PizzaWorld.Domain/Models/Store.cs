@@ -6,10 +6,8 @@ namespace PizzaWorld.Domain.Models
 
     public class Store : AEntity
     {
-
         public string Name { get; set; }
         public List<Order> Orders { get; set;}
-
         public Store()
         {
             if(Orders == null)
@@ -17,12 +15,6 @@ namespace PizzaWorld.Domain.Models
                 Orders = new List<Order>();
             }
         }
-
-        public void CreateOrder()
-        {
-            Orders.Add(new Order());
-        }
-
         public bool DeleteOrder(Order order)
         {
             try {

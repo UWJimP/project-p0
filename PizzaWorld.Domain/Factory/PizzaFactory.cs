@@ -14,10 +14,14 @@ namespace PizzaWorld.Domain.Factory
         public static Pizza MakePizza(string pizza)
         {
             var madePizza = new Pizza();
+            madePizza.Name = pizza.ToLower();
+            madePizza.Crust = APizzaPartFactory.MakeCrust("regular");
+            madePizza.Size = APizzaPartFactory.MakeSize("small");
             switch(pizza.ToLower())
             {
                 case "pepperoni":
                     madePizza.AddTopping(APizzaPartFactory.MakeTopping("pepperoni"));
+                    madePizza.Crust = APizzaPartFactory.MakeCrust("thin");
                     madePizza.EntityID = 2;
                     return madePizza;
                 case "combo":
@@ -35,14 +39,17 @@ namespace PizzaWorld.Domain.Factory
                     madePizza.AddTopping(APizzaPartFactory.MakeTopping("mushroom"));
                     madePizza.AddTopping(APizzaPartFactory.MakeTopping("onion"));
                     madePizza.AddTopping(APizzaPartFactory.MakeTopping("olive"));
+                    madePizza.Crust = APizzaPartFactory.MakeCrust("pan");
                     madePizza.EntityID = 5;
                     return madePizza;
                 case "hawaiian":
                     madePizza.AddTopping(APizzaPartFactory.MakeTopping("pineapple"));
                     madePizza.AddTopping(APizzaPartFactory.MakeTopping("ham"));
+                    madePizza.Crust = APizzaPartFactory.MakeCrust("pan");
                     madePizza.EntityID = 6;
                     return madePizza;
                 default:
+                    madePizza.Name = "cheese";
                     madePizza.EntityID = 1;
                     return madePizza;
             }
