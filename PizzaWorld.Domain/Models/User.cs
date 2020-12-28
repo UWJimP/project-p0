@@ -15,7 +15,7 @@ namespace PizzaWorld.Domain.Models
 
         public override string ToString()
         {
-            return $"I have selected this store: {SelectedStore}";
+            return $"Hello {Name}, you are able to order pizza(s) now.";
         }
     }
 }

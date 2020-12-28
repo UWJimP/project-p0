@@ -15,10 +15,15 @@ namespace PizzaWorld.Client
             
         }
 
-        public IEnumerable<Order> ReadOrders(Store store) //How to make generic
+        public List<Order> ReadOrders(Store store) //How to make generic
         {
             return ReadOneStore(store.Name).Orders;
         }
+
+/*         public T ReadOrders<T>(Store store) where T : List<Order>, new()
+        {
+            return ReadOneStore(store.Name).Orders;
+        } */
 
         public IEnumerable<Store> ReadStores()
         {

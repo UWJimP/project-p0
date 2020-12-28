@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using PizzaWorld.Domain.Abstracts;
 
@@ -5,9 +6,11 @@ namespace PizzaWorld.Domain.Models
 {
     public class Order : AEntity
     {
+        public DateTime Date { get; set; }
         public List<Pizza> Pizzas { get; set; }
         public Order()
         {
+            Date = DateTime.Now;
             Pizzas = new List<Pizza>();
         }
         public bool AddPizza(Pizza pizza)
