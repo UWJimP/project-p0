@@ -15,7 +15,6 @@ namespace PizzaWorld.Storing
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            //var connection = "Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorldBuz;User ID=sqladmin;Password=;";
             var connection = "Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorld2;User ID=sqladmin;Password=;";
             builder.UseSqlServer(connection);
         }

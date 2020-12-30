@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using PizzaWorld.Domain.Abstracts;
 using PizzaWorld.Domain.Factory;
 
@@ -45,6 +46,16 @@ namespace PizzaWorld.Domain.Models
                 APizzaPartFactory.MakeTopping("cheese"),
                 APizzaPartFactory.MakeTopping("sauce")
             };
+        }
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder($"{Name} pizza: ");
+            stringBuilder.Append($"price: ${GetTotalCost()} Ingredients: ");
+            foreach(var topping in Toppings)
+            {
+                stringBuilder.Append($"{topping} ");
+            }
+            return stringBuilder.ToString();
         }
     }
 }

@@ -58,17 +58,18 @@ namespace PizzaWorld.Client
                         MakingOrder(user);
                         state = MenuState.StoresOptions;
                         break;
+                    case MenuState.ViewHistory:
+                        Console.WriteLine("PLEASE IMPLEMENT VIEW HISTORY");
+                        state = MenuState.StoresOptions;
+                        break;
+                    case MenuState.ViewStoreHistory:
+                        Console.WriteLine("PLEASE IMPLEMENT VIEW STORE HISTORY");
+                        state = MenuState.StoresOptions;
+                        break;
                     default:
                         runLoop = false;
                         break;
                 }
-            }
-
-            if(user.SelectedStore != null) // Continue with the program.
-            {
-                //user.SelectedStore.CreateOrder();
-                var order = user.SelectedStore.Orders.Last();
-                user.Orders.Add(order);
             }
             Console.WriteLine("Thank you, have a nice day!");
         }
@@ -103,7 +104,7 @@ namespace PizzaWorld.Client
             Console.WriteLine("2. View Your Order History");
             Console.WriteLine("3. View Your Order History with this Store");
             Console.WriteLine("4. Select another Store");
-            Console.WriteLine("4. Quit");
+            Console.WriteLine("5. Quit");
         }
         private static MenuState SelectStoreOption()
         {
@@ -156,8 +157,17 @@ namespace PizzaWorld.Client
                     if(input >= 0 && input < pizzas.Count())
                     {
                         var selectedPizza = PizzaFactory.MakePizza(pizzas[input]);
-                        Console.WriteLine($"You have added: {pizzas[input]} to your order.");
-                        //Add sizes here next Jim
+                        Console.WriteLine($"You have selected: a {pizzas[input]} pizza.");
+                        Console.WriteLine(selectedPizza);
+                        bool confirmation = ConfirmationInput("Is this correct?");
+                        if(confirmation)
+                        {
+                            //Add sizes here next Jim
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Pizza was cancelled.");
+                        }
                     }
                     else
                     {
@@ -169,6 +179,26 @@ namespace PizzaWorld.Client
                 else
                 {
                     Console.WriteLine("Invalid input. Please input a valid input.");
+                }
+            }
+        }
+        private static bool ConfirmationInput(string message)
+        {
+            while(true) 
+            {
+                Console.WriteLine($"{message}: y/n");
+                var input = Console.ReadLine();
+                if(input.ToLower().Equals("y"))
+                {
+                    return true;
+                }
+                else if(input.ToLower().Equals("n"))
+                {
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input");
                 }
             }
         }

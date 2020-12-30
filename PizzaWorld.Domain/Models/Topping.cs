@@ -7,5 +7,9 @@ namespace PizzaWorld.Domain.Models
         public Topping(){}
         public Topping(string name) : base(name, 0.75d){}
         public Topping(string name, double price) : base(name, price){}
+        public override string ToString()
+        {
+            return $"{Name}";
+        }
     }
 }
