@@ -12,6 +12,8 @@ namespace PizzaWorld.Storing
         public DbSet<Store> Stores { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Size> Sizes { get; }
+        public DbSet<Crust> Crusts { get; }
+        public DbSet<Topping> Toppings { get; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {

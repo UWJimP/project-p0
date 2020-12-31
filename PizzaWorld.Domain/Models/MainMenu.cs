@@ -1,6 +1,6 @@
 namespace PizzaWorld.Domain.Models
 {
-    public enum MenuState
+    public enum MainMenu
     {
         User,
         Stores,

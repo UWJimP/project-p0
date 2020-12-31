@@ -26,12 +26,18 @@ namespace PizzaWorld.Client
         {
             return _db.Sizes;
         }
-
         public IEnumerable<Store> ReadStores()
         {
             return _db.Stores;
         }
-
+        public IEnumerable<Crust> ReadCrusts()
+        {
+            return _db.Crusts;
+        }
+        public IEnumerable<Topping> ReadToppings()
+        {
+            return _db.Toppings;
+        }
         public Store ReadOneStore(string name)
         {
             return _db.Stores.FirstOrDefault<Store>(store => store.Name == name);
