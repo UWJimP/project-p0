@@ -19,14 +19,14 @@ namespace PizzaWorld.Domain.Models
             {
                 Pizzas = new List<Pizza>();
             }
-            if(pizza.GetTotalCost() + GetTotalCost() <= 250d && Pizzas.Count < 50)
+            if(pizza.GetTotalCost() + GetTotalAmount() <= 250d && Pizzas.Count < 50)
             {
                 Pizzas.Add(pizza);
                 return true;
             }
             return false;
         }
-        public double GetTotalCost()
+        public double GetTotalAmount()
         {
             double cost = 0;
             if(Pizzas != null)

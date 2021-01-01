@@ -14,7 +14,6 @@ namespace PizzaWorld.Domain.Models
         {
             Orders = new List<Order>();
         }
-
         public bool AddOrder(Order order)
         {
             if(Orders.Count() == 0) //Checks if the user is new.
@@ -30,7 +29,6 @@ namespace PizzaWorld.Domain.Models
             }
             return false;
         }
-
         public override string ToString()
         {
             return $"Hello {Name}, you are able to order pizza(s) now.";

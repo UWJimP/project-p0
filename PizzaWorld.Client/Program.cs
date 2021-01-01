@@ -76,10 +76,15 @@ namespace PizzaWorld.Client
         }
         private static User CreateUser()
         {
-            var user = new User();
             Console.WriteLine("Please enter your name: ");
             var name = Console.ReadLine();
-            user.Name = name;
+            User user = _sql.ReadOneUser(name.Trim());
+            if(user == null)
+            {
+                user = new User();
+                user.Name = name.Trim();
+                _sql.SaveUser(user);
+            }
             Console.WriteLine(user);
             return user;
         }
@@ -150,6 +155,11 @@ namespace PizzaWorld.Client
             }
             while(continueInput)
             {
+                if(order.Pizzas.Count() >= 50)
+                {
+                    state = PizzaMenu.Finish;
+                    Console.WriteLine("You have 50 pizzas, completing order.");
+                }
                 switch(state)
                 {
                     case(PizzaMenu.SelectPizza):
@@ -157,27 +167,42 @@ namespace PizzaWorld.Client
                         state = PizzaMenu.SelectSize;
                         break;
                     case(PizzaMenu.SelectSize):
-                        var sizeString = SelectAPart<Size>(_sql.ReadSizes().ToList(), "Select a size: ");
+                        var sizeString = _sql.SelectAPizzaPart<Size>(_sql.ReadSizes().ToList(),
+                         "Select a size: ");
                         //pizza.Size = SelectSize();
                         pizza.Size = APizzaPartFactory.MakeSize(sizeString);
                         state = PizzaMenu.SelectCrust;
                         break;
                     case(PizzaMenu.SelectCrust):
-                        //Select crust of pizza
-                        var crustString = SelectAPart<Crust>(_sql.ReadCrusts().ToList(), "Select a crust: ");
+                        var crustString = _sql.SelectAPizzaPart<Crust>(_sql.ReadCrusts().ToList(),
+                         "Select a crust: ");
                         pizza.Crust = APizzaPartFactory.MakeCrust(crustString);
                         state = PizzaMenu.AddTopping;
                         break;
                     case(PizzaMenu.AddTopping):
-                        //Add toppings to pizza
                         AddToppings(pizza);
                         state = PizzaMenu.Finish;
                         break;
                     case(PizzaMenu.CheckOrder):
-                        //Set up logic here to find
+                        bool canAddPizza = order.AddPizza(pizza);
+                        if(!canAddPizza)
+                        {
+                            Console.WriteLine("Sorry, your order would put you over the limit of $250.");
+                            Console.WriteLine("Either complete your order or add another pizza.");
+                        }
+                        Console.WriteLine($"Your current total is: {order.GetTotalAmount()} with {order.Pizzas.Count()} pizza(s).");
+                        bool confirmation = ConfirmationInput("Would you like to add another pizza?");
+                        if(!confirmation)
+                        {
+                            state = PizzaMenu.Finish;
+                            Console.WriteLine("We have completed your order. Thank you for your time.");
+                        }
                         break;
                     default:
+                        Console.WriteLine($"Your total is: {order.GetTotalAmount()} with {order.Pizzas.Count()} pizza(s).");
                         continueInput = false;
+                        user.SelectedStore.Orders.Add(order);
+                        _sql.SaveChanges();
                         break;
                 }
             }
