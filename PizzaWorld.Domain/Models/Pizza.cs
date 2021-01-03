@@ -10,16 +10,25 @@ namespace PizzaWorld.Domain.Models
         public Crust Crust { get; set; }
         public Size Size { get; set; }
         public string Name { get; set; }
-        public List<Topping> Toppings { get; set; }
+        public virtual List<Topping> Toppings { get; set; }
         public Pizza()
         {
-            DefaultToppings();
+            if(Toppings == null)
+            {
+                DefaultToppings();
+            }
         }
         public double GetTotalCost()
         {
             double total = 1d; //Base price of pizza without anything.
-            total += Crust.Price;
-            total += Size.Price;
+            if(Crust != null)
+            {
+                total += Crust.Price;
+            }
+            if(Size != null)
+            {
+                total += Size.Price;
+            }
             foreach(var topping in Toppings)
             {
                 total += topping.Price;
@@ -41,16 +50,21 @@ namespace PizzaWorld.Domain.Models
         }
         private void DefaultToppings()
         {
-            Toppings = new List<Topping>()
-            { 
-                APizzaPartFactory.MakeTopping("cheese"),
-                APizzaPartFactory.MakeTopping("sauce")
-            };
+            Toppings = new List<Topping>();
         }
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder($"{Name} pizza: ");
-            stringBuilder.Append($"price: ${GetTotalCost()} Ingredients: ");
+            stringBuilder.Append($"price: ${GetTotalCost()} ");
+            if(Crust != null)
+            {
+                stringBuilder.Append($"Crust: {Crust} ");
+            }
+            if(Size != null)
+            {
+                stringBuilder.Append($"Size: {Size} ");
+            }
+            stringBuilder.Append("Ingredients: ");
             foreach(var topping in Toppings)
             {
                 stringBuilder.Append($"{topping} ");

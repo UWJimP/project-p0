@@ -41,7 +41,8 @@ namespace PizzaWorld.Client
                         state = MainMenu.Stores;
                         break;
                     case MainMenu.Stores: //Prints all stores and select a store.
-                        PrintAllStores();
+                        //PrintAllStores();
+                        PrintItems<Store>(GetAllStores().ToList());
                         Console.WriteLine("Please select a store by its given numbers or any other number to quit: ");
                         user.SelectedStore = _sql.SelectStore();
                         if(user.SelectedStore == null)
@@ -60,7 +61,14 @@ namespace PizzaWorld.Client
                         state = MainMenu.StoresOptions;
                         break;
                     case MainMenu.ViewHistory:
-                        Console.WriteLine("PLEASE IMPLEMENT VIEW HISTORY");
+                        if(user.Orders.Count <= 0)
+                        {
+                            Console.WriteLine("You have no orders.");
+                        }
+                        else
+                        {
+                            PrintItems<Order>(user.Orders);
+                        }
                         state = MainMenu.StoresOptions;
                         break;
                     case MainMenu.ViewStoreHistory:
@@ -85,23 +93,23 @@ namespace PizzaWorld.Client
                 user.Name = name.Trim();
                 _sql.SaveUser(user);
             }
+            else
+            {
+                Console.WriteLine("Found user");
+                List<Order> orders = _sql.ReadUsersOrders(name.Trim());
+                if(orders != null)
+                {
+                    user.Orders = orders;
+                }
+            }
             Console.WriteLine(user);
             return user;
         }
-        private static void PrintAllStores()
+        private static void PrintItems<T>(List<T> list)
         {
-            IEnumerable<Store> stores = GetAllStores();
-            for(var index = 0; index < stores.Count(); index++)
+            for(int index = 0; index < list.Count; index++)
             {
-                Console.WriteLine($"{index}. {stores.ElementAtOrDefault(index)}");
-            }
-        }
-        private static void PrintAllPizzas()
-        {
-            List<string> pizzas = PizzaFactory.GetAllPizzaStrings();
-            for(int index = 0; index < pizzas.Count(); index++)
-            {
-                Console.WriteLine($"{index}: {pizzas[index]}");
+                Console.WriteLine($"{index}: {list[index]}");
             }
         }
         private static void PrintStoreOptions()
@@ -167,21 +175,34 @@ namespace PizzaWorld.Client
                         state = PizzaMenu.SelectSize;
                         break;
                     case(PizzaMenu.SelectSize):
-                        var sizeString = _sql.SelectAPizzaPart<Size>(_sql.ReadSizes().ToList(),
+                        List<Size> sizes =  _sql.ReadSizes().ToList();
+                        var sizeString = _sql.SelectAPizzaPart<Size>(sizes,
                          "Select a size: ");
                         //pizza.Size = SelectSize();
-                        pizza.Size = APizzaPartFactory.MakeSize(sizeString);
+                        pizza.Size = sizes.ElementAtOrDefault<Size>(sizeString);
+                        //pizza.Size = APizzaPartFactory.MakeSize(sizeString);
                         state = PizzaMenu.SelectCrust;
                         break;
                     case(PizzaMenu.SelectCrust):
+                        List<Crust> crusts = _sql.ReadCrusts().ToList();
                         var crustString = _sql.SelectAPizzaPart<Crust>(_sql.ReadCrusts().ToList(),
                          "Select a crust: ");
-                        pizza.Crust = APizzaPartFactory.MakeCrust(crustString);
-                        state = PizzaMenu.AddTopping;
+                        //pizza.Crust = APizzaPartFactory.MakeCrust(crustString);
+                        pizza.Crust = crusts.ElementAtOrDefault<Crust>(crustString);
+                        bool addTopping = ConfirmationInput("Would you like to add toppings?");
+                        if(addTopping)
+                        {
+                            state = PizzaMenu.AddTopping;
+                            pizza.Name = "custom";
+                        }
+                        else
+                        {
+                            state = PizzaMenu.CheckOrder;
+                        }
                         break;
                     case(PizzaMenu.AddTopping):
                         AddToppings(pizza);
-                        state = PizzaMenu.Finish;
+                        state = PizzaMenu.CheckOrder;
                         break;
                     case(PizzaMenu.CheckOrder):
                         bool canAddPizza = order.AddPizza(pizza);
@@ -190,16 +211,20 @@ namespace PizzaWorld.Client
                             Console.WriteLine("Sorry, your order would put you over the limit of $250.");
                             Console.WriteLine("Either complete your order or add another pizza.");
                         }
-                        Console.WriteLine($"Your current total is: {order.GetTotalAmount()} with {order.Pizzas.Count()} pizza(s).");
+                        Console.WriteLine($"Your current total is: ${order.GetTotalAmount()} with {order.Pizzas.Count()} pizza(s).");
                         bool confirmation = ConfirmationInput("Would you like to add another pizza?");
-                        if(!confirmation)
+                        if(confirmation)
+                        {
+                           state = PizzaMenu.SelectPizza; 
+                        }
+                        else
                         {
                             state = PizzaMenu.Finish;
                             Console.WriteLine("We have completed your order. Thank you for your time.");
                         }
                         break;
                     default:
-                        Console.WriteLine($"Your total is: {order.GetTotalAmount()} with {order.Pizzas.Count()} pizza(s).");
+                        Console.WriteLine($"Your total is: ${order.GetTotalAmount()} with {order.Pizzas.Count()} pizza(s).");
                         continueInput = false;
                         user.SelectedStore.Orders.Add(order);
                         _sql.SaveChanges();
@@ -211,15 +236,16 @@ namespace PizzaWorld.Client
         {
             while(true)
             {
-                PrintAllPizzas();
+                //PrintAllPizzas();
                 List<string> pizzas = PizzaFactory.GetAllPizzaStrings();
+                PrintItems<string>(pizzas);
                 Console.WriteLine("Select a pizza you want to order or enter any other number to finish: ");
                 bool validInput = int.TryParse(Console.ReadLine(), out int input);
                 if(validInput)
                 {
                     if(input >= 0 && input < pizzas.Count())
                     {
-                        var selectedPizza = PizzaFactory.MakePizza(pizzas[input]);
+                        var selectedPizza = PizzaFactory.MakePizza(pizzas[input], _sql.ReadToppings());
                         Console.WriteLine($"You have selected: a {pizzas[input]} pizza.");
                         Console.WriteLine(selectedPizza);
                         bool confirmation = ConfirmationInput("Is this correct?");
@@ -239,62 +265,6 @@ namespace PizzaWorld.Client
                 }
             }
         }
-        private static Size SelectSize()
-        {
-            List<Size> sizes = _sql.ReadSizes().ToList();
-            while(true)
-            {
-                for(int index = 0; index < sizes.Count(); index++)
-                {
-                    Console.WriteLine($"{index}: {sizes[index]}");
-                }
-                Console.WriteLine("Select a size: ");
-                bool validInput = int.TryParse(Console.ReadLine(), out int input);
-                if(validInput)
-                {
-                    if(input >= 0 && input < sizes.Count())
-                    {
-                        return APizzaPartFactory.MakeSize(sizes[input].ToString());
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid selection. Try again.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid input, try again.");
-                }
-            }
-        }
-        private static string SelectAPart<T>(List<T> list, string message) where T : APizzaPart
-        {
-            while(true)
-            {
-                for(int index = 0; index < list.Count(); index++)
-                {
-                    Console.WriteLine($"{index}: {list[index]}");
-                }
-                Console.WriteLine(message);
-                bool validInput = int.TryParse(Console.ReadLine(), out int input);
-                if(validInput)
-                {
-                    if(input >= 0 && input < list.Count())
-                    {
-                        //return APizzaPartFactory.MakeSize(list[input].ToString());
-                        return list[input].Name;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid selection. Try again.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid input, try again.");
-                }
-            }
-        }
         private static void AddToppings(Pizza pizza)
         {
             List<Topping> toppings = _sql.ReadToppings().ToList();
@@ -303,12 +273,14 @@ namespace PizzaWorld.Client
             {
                 Console.Write(topping + " ");
             }
+            Console.WriteLine(); //Just to start a new line.
             while(pizza.Toppings.Count < 5)
             {
                 for(var index = 0; index < toppings.Count(); index++)
                 {
                     Console.WriteLine($"{index}: {toppings[index]} ${toppings[index].Price}");
                 }
+                Console.WriteLine("Input a number for a topping or any other number to quit.");
                 bool validInput = int.TryParse(Console.ReadLine(), out int input);
                 if(validInput)
                 {
@@ -319,6 +291,10 @@ namespace PizzaWorld.Client
                         if(added)
                         {
                             Console.WriteLine($"Added {selectedTopping}");
+                            if(pizza.Toppings.Count() >= 5)
+                            {
+                                Console.WriteLine("You've reached your limit on toppings");
+                            }
                         }
                         else
                         {
@@ -327,7 +303,8 @@ namespace PizzaWorld.Client
                     }
                     else
                     {
-                        Console.WriteLine("Invalid choice. Try again.");
+                        Console.WriteLine("Thank you for selecting your toppings.");
+                        return;
                     }
                 }
                 else

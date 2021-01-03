@@ -10,11 +10,11 @@ namespace PizzaWorld.Domain.Factory
             switch(size.ToLower())
             {
                 case "large":
-                    return new Size("large", 3d) { EntityID = 2};
+                    return new Size("large", 3d);
                 case "medium":
-                    return new Size("medium", 2d) { EntityID = 3};
+                    return new Size("medium", 2d);
                 default:
-                    return new Size("small", 1d) { EntityID = 1};
+                    return new Size("small", 1d);
             }
         }
         public static Crust MakeCrust(string crust)
@@ -22,11 +22,11 @@ namespace PizzaWorld.Domain.Factory
             switch(crust.ToLower())
             {
                 case "thin":
-                    return new Crust("thin", 1.5d) { EntityID = 2 };
+                    return new Crust("thin", 1.5d);
                 case "pan":
-                    return new Crust("pan", 1.75d) { EntityID = 3 };
+                    return new Crust("pan", 1.75d);
                 default:
-                    return new Crust("regular", 1d) { EntityID = 1 };
+                    return new Crust("regular", 1d);
             }
         }
         public static Topping MakeTopping(string topping)
@@ -34,23 +34,23 @@ namespace PizzaWorld.Domain.Factory
             switch(topping.ToLower())
             {
                 case "pepperoni":
-                    return new Topping("pepperoni") { EntityID = 2};
+                    return new Topping("pepperoni");
                 case "sausage":
-                    return new Topping("sausage") { EntityID = 3};
+                    return new Topping("sausage");
                 case "pineapple":
-                    return new Topping("pineapple") { EntityID = 4};
+                    return new Topping("pineapple");
                 case "ham":
-                    return new Topping("ham") { EntityID = 5};
+                    return new Topping("ham");
                 case "onion":
-                    return new Topping("onion") { EntityID = 6};
+                    return new Topping("onion");
                 case "mushroom":
-                    return new Topping("mushroom") { EntityID = 7};
+                    return new Topping("mushroom");
                 case "olive":
-                    return new Topping("olive") { EntityID = 8};
+                    return new Topping("olive");
                 case "sauce":
-                    return new Topping("sauce", 2d) { EntityID = 9};
+                    return new Topping("sauce", 2d);
                 default:
-                    return new Topping("cheese", 1d) { EntityID = 1};
+                    return new Topping("cheese", 1d);
             }
         }
     }

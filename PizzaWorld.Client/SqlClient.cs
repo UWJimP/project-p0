@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using PizzaWorld.Domain.Abstracts;
 using PizzaWorld.Domain.Models;
 using PizzaWorld.Storing;
@@ -33,11 +34,38 @@ namespace PizzaWorld.Client
         }
         public User ReadOneUser(string name)
         {
-            return _db.Users.FirstOrDefault<User>(user => user.Name == name);
+            return _db.Users.Include(user => user.Orders).
+            ThenInclude(order => order.Pizzas).
+            FirstOrDefault<User>(user => user.Name == name);
         }
         public Store ReadOneStore(string name)
         {
             return _db.Stores.FirstOrDefault<Store>(store => store.Name == name);
+        }
+        public List<Order> ReadUsersOrders(string name)
+        {
+            //return _db.Users.FirstOrDefault<User>(u => u.Name == name).Orders;
+            var test = _db.Users
+            .Include(user => user.Orders)
+            .ThenInclude(order => order.Pizzas).ToList();
+            var orders = _db.Users
+            .Include(user => user.Orders)
+            .ThenInclude(order => order.Pizzas)
+            .ThenInclude(pizza => pizza.Toppings)
+            .Include(user => user.Orders)
+            .ThenInclude(order => order.Pizzas)
+            .ThenInclude(pizza => pizza.Crust)
+            .Include(user => user.Orders)
+            .ThenInclude(order => order.Pizzas)
+            .ThenInclude(pizza => pizza.Size)
+            .FirstOrDefault<User>(user => user.Name == name);
+            return orders.Orders;
+        }
+        public List<Order> ReadTestOrders(string name)
+        {
+            var query = from s in _db.Users where s.Name == name select s;
+            var user = query.ToList().FirstOrDefault<User>(u => u.Name == name);
+            return user.Orders;
         }
         public void SaveStore(Store store)
         {
@@ -68,13 +96,13 @@ namespace PizzaWorld.Client
                 }
             }
         }
-        public string SelectAPizzaPart<T>(List<T> list, string message) where T : APizzaPart
+        public int SelectAPizzaPart<T>(List<T> list, string message) where T : APizzaPart
         {
             while(true)
             {
                 for(int index = 0; index < list.Count(); index++)
                 {
-                    Console.WriteLine($"{index}: {list[index]}");
+                    Console.WriteLine($"{index}: {list[index]} ${list[index].Price}");
                 }
                 Console.WriteLine(message);
                 bool validInput = int.TryParse(Console.ReadLine(), out int input);
@@ -83,7 +111,8 @@ namespace PizzaWorld.Client
                     if(input >= 0 && input < list.Count())
                     {
                         //return APizzaPartFactory.MakeSize(list[input].ToString());
-                        return list[input].Name;
+                        //return list[input].Name;
+                        return input;
                     }
                     else
                     {

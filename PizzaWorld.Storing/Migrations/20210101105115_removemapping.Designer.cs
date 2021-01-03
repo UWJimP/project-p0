@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PizzaWorld.Storing;
 
 namespace PizzaWorld.Storing.Migrations
 {
     [DbContext(typeof(PizzaWorldContext))]
-    partial class PizzaWorldContextModelSnapshot : ModelSnapshot
+    [Migration("20210101105115_removemapping")]
+    partial class removemapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,18 +135,18 @@ namespace PizzaWorld.Storing.Migrations
                         new
                         {
                             EntityID = 1L,
-                            Name = "regular",
+                            Name = "small",
                             Price = 1.0
                         },
                         new
                         {
-                            EntityID = 2L,
+                            EntityID = 3L,
                             Name = "medium",
                             Price = 2.0
                         },
                         new
                         {
-                            EntityID = 3L,
+                            EntityID = 2L,
                             Name = "large",
                             Price = 3.0
                         });
@@ -276,7 +278,12 @@ namespace PizzaWorld.Storing.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long?>("SelectedStoreEntityID")
+                        .HasColumnType("bigint");
+
                     b.HasKey("EntityID");
+
+                    b.HasIndex("SelectedStoreEntityID");
 
                     b.ToTable("Users");
                 });
@@ -316,6 +323,15 @@ namespace PizzaWorld.Storing.Migrations
                     b.HasOne("PizzaWorld.Domain.Models.Pizza", null)
                         .WithMany("Toppings")
                         .HasForeignKey("PizzaEntityID");
+                });
+
+            modelBuilder.Entity("PizzaWorld.Domain.Models.User", b =>
+                {
+                    b.HasOne("PizzaWorld.Domain.Models.Store", "SelectedStore")
+                        .WithMany()
+                        .HasForeignKey("SelectedStoreEntityID");
+
+                    b.Navigation("SelectedStore");
                 });
 
             modelBuilder.Entity("PizzaWorld.Domain.Models.Order", b =>

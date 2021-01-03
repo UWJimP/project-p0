@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using PizzaWorld.Domain.Abstracts;
 
@@ -8,11 +9,15 @@ namespace PizzaWorld.Domain.Models
     public class User : AEntity
     {
         public string Name { get; set; }
+        [NotMapped]
         public Store SelectedStore { get; set; }
-        public List<Order> Orders { get; set; }
+        public virtual List<Order> Orders { get; set; }
         public User()
         {
-            Orders = new List<Order>();
+            if(Orders == null)
+            {
+                Orders = new List<Order>();
+            }
         }
         public bool AddOrder(Order order)
         {
