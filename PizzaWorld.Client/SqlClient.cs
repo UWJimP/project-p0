@@ -28,10 +28,6 @@ namespace PizzaWorld.Client
         {
             return _db.Crusts;
         }
-        public IEnumerable<Topping> ReadToppings()
-        {
-            return _db.Toppings;
-        }
         public User ReadOneUser(string name)
         {
             return _db.Users.Include(user => user.Orders).
@@ -41,41 +37,39 @@ namespace PizzaWorld.Client
         public Store ReadOneStore(string name)
         {
             return _db.Stores.FirstOrDefault<Store>(store => store.Name == name);
+            
         }
         public List<Order> ReadUsersOrders(string name)
         {
-            //return _db.Users.FirstOrDefault<User>(u => u.Name == name).Orders;
             var orders = _db.Users
-/*             .Include(user => user.Orders)
+            .Include(user => user.Orders)
                 .ThenInclude(order => order.Pizzas)
                     .ThenInclude(pizza => pizza.Toppings)
             .Include(user => user.Orders)
                 .ThenInclude(order => order.Pizzas)
-                    .ThenInclude(pizza => pizza.Crust) */
+                    .ThenInclude(pizza => pizza.Crust)
             .Include(user => user.Orders)
                 .ThenInclude(order => order.Pizzas)
                     .ThenInclude(pizza => pizza.Size)
             .FirstOrDefault<User>(user => user.Name == name);
             return orders.Orders;
         }
-        public List<Pizza> ReadPizzasByOrder(Order order)
+        public List<Order> ReadUsersOrdersByStore(User user)
         {
-            var test = _db.Find<Order>(order.EntityID);
-            return test.Pizzas;
-        }
-        public List<Order> ReadOrdersByStore(Store store)
-        {
-            var orders = _db.Stores
-            .Include(s => s.Orders)
-                .ThenInclude(o => o.Pizzas)
-            .FirstOrDefault<Store>(s => s.Name == store.Name);
-            return orders.Orders;
-        }
-        public List<Order> ReadTestOrders(string name)
-        {
-            var query = from s in _db.Users where s.Name == name select s;
-            var user = query.ToList().FirstOrDefault<User>(u => u.Name == name);
-            return user.Orders;
+            //var query = $"SELECT * FROM [Order] WHERE [Order].UserEntityID = {user.EntityID};";
+            var test = _db.Stores
+            //.FromSqlRaw(query)
+            .Include(store => store.Orders)
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Crust)
+            .Include(store => store.Orders)
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Size)
+            .Include(store => store.Orders)
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Toppings)
+            .FirstOrDefault<Store>(s => s.EntityID == user.SelectedStore.EntityID);
+            return test.Orders.ToList();
         }
         public void SaveStore(Store store)
         {

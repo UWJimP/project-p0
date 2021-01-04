@@ -14,8 +14,7 @@ namespace PizzaWorld.Storing
         public DbSet<Topping> Toppings { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            //var connection = "Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorld2;User ID=sqladmin;Password=Momo0Kagami;";
-            var connection = "Server=jimpizzaprojectdb.database.windows.net,1433;Initial Catalog=JimPizzaProjectDB;User ID=sqladmin;Password=;";
+            var connection = "Server=jimpizzaprojectdb.database.windows.net,1433;Initial Catalog=JimPizzaProjectDB;User ID=sqladmin;Password=Password123;";
             builder.UseSqlServer(connection);
         }
         protected override void OnModelCreating(ModelBuilder builder)
@@ -26,7 +25,7 @@ namespace PizzaWorld.Storing
             builder.Entity<Order>().HasMany(order => order.Pizzas);
 
             builder.Entity<User>().HasKey(user => user.EntityID);
-            builder.Entity<User>().HasMany(user => user.Orders);
+            builder.Entity<User>().HasMany(store => store.Orders);
 
             builder.Entity<Pizza>().HasKey(pizza => pizza.EntityID);
             builder.Entity<Pizza>().HasOne(pizza => pizza.Crust);
@@ -46,22 +45,22 @@ namespace PizzaWorld.Storing
         {
             builder.Entity<User>().HasData(new List<User>()
             {
-                new User() { EntityID = 1, Name = "admin" }
+                new User() { Name = "admin", EntityID = 1 }
             });
         }
         private void SeedToppingData(ModelBuilder builder)
         {
             builder.Entity<Topping>().HasData(new List<Topping>()
             {
-                new Topping("cheese", 1d) { EntityID = 1},
-                new Topping("pepperoni") { EntityID = 2},
-                new Topping("sausage") { EntityID = 3},
-                new Topping("pineapple") { EntityID = 4},
-                new Topping("ham") { EntityID = 5},
-                new Topping("onion") { EntityID = 6},
-                new Topping("mushroom") { EntityID = 7},
-                new Topping("olive") { EntityID = 8},
-                new Topping("sauce", 2d) { EntityID = 9}
+                new Topping("cheese", 1d) { EntityID = 1 },
+                new Topping("pepperoni") { EntityID = 2 },
+                new Topping("sausage") { EntityID = 3 },
+                new Topping("pineapple") { EntityID = 4 },
+                new Topping("ham") { EntityID = 5 },
+                new Topping("onion") { EntityID = 6 },
+                new Topping("mushroom") { EntityID = 7 },
+                new Topping("olive") { EntityID = 8 },
+                new Topping("sauce", 2d) { EntityID = 9 }
             });
         }
         private void SeedCrustData(ModelBuilder builder)

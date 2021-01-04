@@ -11,7 +11,7 @@ namespace PizzaWorld.Domain.Factory
             "cheese", "pepperoni", "combo", "hawaiian"
         };
         private PizzaFactory(){}
-        public static Pizza MakePizza(string pizza, IEnumerable<Topping> toppings)
+        public static Pizza MakePizza(string pizza)
         {
             var madePizza = new Pizza();
             madePizza.Name = pizza.ToLower();

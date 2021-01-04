@@ -36,7 +36,7 @@ namespace PizzaWorld.Domain.Models
         }
         public override string ToString()
         {
-            return $"Hello {Name}. Welcome to the Pizza Ordering App.";
+            return $"Hello {Name}, you are able to order pizza(s) now.";
         }
     }
 }

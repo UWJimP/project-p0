@@ -58,9 +58,9 @@ namespace PizzaWorld.Domain.Factory
         {
             return new List<Topping>()
             {
-                new Topping("cheese", 1d), new Topping("pepperoni"), new Topping("sausage"),
-                new Topping("pineapple"), new Topping("ham"), new Topping("onion"),
-                new Topping("mushroom"), new Topping("olive"), new Topping("sauce", 2d)
+                new Topping("cheese", 1d), new Topping("sauce", 2d), new Topping("pepperoni"), 
+                new Topping("sausage"), new Topping("pineapple"), new Topping("ham"),
+                new Topping("onion"), new Topping("mushroom"), new Topping("olive") 
             };
         }
     }

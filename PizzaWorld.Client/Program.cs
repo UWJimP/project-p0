@@ -13,10 +13,12 @@ namespace PizzaWorld.Client
         private static readonly ClientSingleton _client = ClientSingleton.Instance;
         private static readonly SqlClient _sql = new SqlClient();
         public Program(){}
+
         static void Main(string[] args)
         {
             EntryView();
         }
+
         private static IEnumerable<Store> GetAllStores()
         {
             return _sql.ReadStores();
@@ -24,47 +26,24 @@ namespace PizzaWorld.Client
         private static void EntryView()
         {
             var user = CreateUser();
-            if(user.Name.ToLower() == "admin")
+            if(user.Name.ToLower().Trim() == "admin")
             {
-                AdminView();
+
             }
             else
             {
                 UserView(user);
             }
         }
-        private static void AdminView()
-        {
-            bool runLoop = true;
-            MainMenu state = MainMenu.AdminOptions;
-            while(runLoop)
-            {
-                switch(state)
-                {
-                    case MainMenu.AdminOptions:
-                        state = SelectAdminOptions();
-                        break;
-                    case MainMenu.AdminOrderHistory:
-                        break;
-                    case MainMenu.AdminSalesHistory:
-                        break;
-                    default:
-                        runLoop = false;
-                        break;
-                }
-            }
-        }
         private static void UserView(User user)
         {
-            //User user = null;
             bool runLoop = true;
-            //MainMenu state = MainMenu.User;
             MainMenu state = MainMenu.Stores;
             while(runLoop)
             {
                 switch(state)
                 {
-/*                     case MainMenu.User: //Create a new user
+                    /* case MainMenu.User: //Create a new user
                         user = CreateUser();
                         if(user == null)
                         {
@@ -73,7 +52,6 @@ namespace PizzaWorld.Client
                         state = MainMenu.Stores;
                         break; */
                     case MainMenu.Stores: //Prints all stores and select a store.
-                        //PrintAllStores();
                         PrintItems<Store>(GetAllStores().ToList());
                         Console.WriteLine("Please select a store by its given numbers or any other number to quit: ");
                         user.SelectedStore = _sql.SelectStore();
@@ -99,12 +77,17 @@ namespace PizzaWorld.Client
                         }
                         else
                         {
+                            user.Orders = _sql.ReadUsersOrders(user.Name);
                             PrintItems<Order>(user.Orders);
                         }
                         state = MainMenu.StoresOptions;
                         break;
                     case MainMenu.ViewStoreHistory:
-                        Console.WriteLine("PLEASE IMPLEMENT VIEW STORE HISTORY");
+                        var user_orders = _sql.ReadUsersOrdersByStore(user);
+                        if(user_orders == null || user_orders.Count == 0)
+                        {
+                            Console.WriteLine($"Sorry, you do not have any orders with {user.SelectedStore}.");
+                        }
                         state = MainMenu.StoresOptions;
                         break;
                     default:
@@ -127,17 +110,12 @@ namespace PizzaWorld.Client
             }
             else
             {
-                //Console.WriteLine("Found user");
+                /* Console.WriteLine("Found user");
                 List<Order> orders = _sql.ReadUsersOrders(name.Trim());
                 if(orders != null)
                 {
-                    var store = _sql.ReadStores().ToList()[0];
-                    var test1 = _sql.ReadOrdersByStore(store);
                     user.Orders = orders;
-                    var order = orders[0];
-                    var pizza = _sql.ReadPizzasByOrder(order);
-                    Console.WriteLine(pizza);
-                }
+                } */
             }
             Console.WriteLine(user);
             return user;
@@ -156,40 +134,6 @@ namespace PizzaWorld.Client
             Console.WriteLine("3. View Your Order History with this Store");
             Console.WriteLine("4. Select another Store");
             Console.WriteLine("5. Quit");
-        }
-        private static void PrintAdminOptions()
-        {
-            Console.WriteLine("1. ");
-            Console.WriteLine("2. ");
-            Console.WriteLine("3. Quit");
-        }
-        private static MainMenu SelectAdminOptions()
-        {
-            while(true)
-            {
-                PrintAdminOptions();
-                Console.WriteLine("Please select one of these options: ");
-                bool validInput = int.TryParse(Console.ReadLine(), out int input);
-                if(validInput)
-                {
-                    switch(input)
-                    {
-                        case 1:
-                            return MainMenu.AdminOrderHistory;
-                        case 2:
-                            return MainMenu.AdminSalesHistory;
-                        case 3:
-                            return MainMenu.Quit;
-                        default:
-                            Console.WriteLine("Invalid number input, try again: ");
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid input, please put in a number.");
-                }
-            }
         }
         private static MainMenu SelectStoreOption()
         {
@@ -225,7 +169,7 @@ namespace PizzaWorld.Client
         private static void MakeOrder(User user)
         {
             var order = new Order();
-            bool continueInput = user.AddOrder(new Order());
+            bool continueInput = user.AddOrder(order);
             PizzaMenu state = PizzaMenu.SelectPizza;
             Pizza pizza = null;
             if(!continueInput)
@@ -249,16 +193,13 @@ namespace PizzaWorld.Client
                         List<Size> sizes =  _sql.ReadSizes().ToList();
                         var sizeString = _sql.SelectAPizzaPart<Size>(sizes,
                          "Select a size: ");
-                        //pizza.Size = SelectSize();
                         pizza.Size = sizes.ElementAtOrDefault<Size>(sizeString);
-                        //pizza.Size = APizzaPartFactory.MakeSize(sizeString);
                         state = PizzaMenu.SelectCrust;
                         break;
                     case(PizzaMenu.SelectCrust):
                         List<Crust> crusts = _sql.ReadCrusts().ToList();
                         var crustString = _sql.SelectAPizzaPart<Crust>(_sql.ReadCrusts().ToList(),
                          "Select a crust: ");
-                        //pizza.Crust = APizzaPartFactory.MakeCrust(crustString);
                         pizza.Crust = crusts.ElementAtOrDefault<Crust>(crustString);
                         bool addTopping = ConfirmationInput("Would you like to add toppings?");
                         if(addTopping)
@@ -290,9 +231,17 @@ namespace PizzaWorld.Client
                         }
                         else
                         {
-                            state = PizzaMenu.Finish;
+                            state = PizzaMenu.RemovePizzas;
                             Console.WriteLine("We have completed your order. Thank you for your time.");
                         }
+                        break;
+                    case PizzaMenu.RemovePizzas:
+                        bool removeConfirm = ConfirmationInput("Would you like to remove any pizzas?");
+                        if(removeConfirm)
+                        {
+                            RemovePizzas(order);
+                        }
+                        state = PizzaMenu.Finish;
                         break;
                     default:
                         Console.WriteLine($"Your total is: ${order.GetTotalAmount()} with {order.Pizzas.Count()} pizza(s).");
@@ -316,7 +265,7 @@ namespace PizzaWorld.Client
                 {
                     if(input >= 0 && input < pizzas.Count())
                     {
-                        var selectedPizza = PizzaFactory.MakePizza(pizzas[input], _sql.ReadToppings());
+                        var selectedPizza = PizzaFactory.MakePizza(pizzas[input]);
                         Console.WriteLine($"You have selected: a {pizzas[input]} pizza.");
                         Console.WriteLine(selectedPizza);
                         bool confirmation = ConfirmationInput("Is this correct?");
@@ -333,6 +282,36 @@ namespace PizzaWorld.Client
                 else
                 {
                     Console.WriteLine("Invalid input, please try again.");
+                }
+            }
+        }
+        private static void RemovePizzas(Order order)
+        {
+            List<Pizza> pizzas = order.Pizzas;
+            bool continueInput = true;
+            while(continueInput)
+            {
+                if(pizzas.Count() > 0)
+                {
+                    PrintItems<Pizza>(pizzas);
+                    Console.WriteLine("Select a pizza or enter any other number to exit");
+                    bool validInput = int.TryParse(Console.ReadLine(), out int input);
+                    if(validInput)
+                    {
+                        if(input >= 0 && input < pizzas.Count())
+                        {
+                            pizzas.RemoveAt(input);
+                        }
+                        else
+                        {
+                            continueInput = false;
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("You are out of pizzas on this order");
+                    continueInput = false;
                 }
             }
         }
