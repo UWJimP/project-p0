@@ -54,22 +54,38 @@ namespace PizzaWorld.Client
             .FirstOrDefault<User>(user => user.Name == name);
             return orders.Orders;
         }
-        public List<Order> ReadUsersOrdersByStore(User user)
+        public List<Order> ReadUsersOrdersFromStore(User user)
         {
-            //var query = $"SELECT * FROM [Order] WHERE [Order].UserEntityID = {user.EntityID};";
             var test = _db.Stores
-            //.FromSqlRaw(query)
-            .Include(store => store.Orders)
+            .Include(store => store.Orders.Where(o => o.UserEntityID == user.EntityID))
                 .ThenInclude(order => order.Pizzas)
                     .ThenInclude(pizza => pizza.Crust)
-            .Include(store => store.Orders)
+            .Include(store => store.Orders.Where(o => o.UserEntityID == user.EntityID))
                 .ThenInclude(order => order.Pizzas)
                     .ThenInclude(pizza => pizza.Size)
-            .Include(store => store.Orders)
+            .Include(store => store.Orders.Where(o => o.UserEntityID == user.EntityID))
                 .ThenInclude(order => order.Pizzas)
                     .ThenInclude(pizza => pizza.Toppings)
             .FirstOrDefault<Store>(s => s.EntityID == user.SelectedStore.EntityID);
             return test.Orders.ToList();
+        }
+        public List<Order> ReadStoreOrdersByUser(Store store, User user)
+        {
+            var orders = _db.Stores
+            .Include(store => store.Orders
+                .Where(o => o.UserEntityID == user.EntityID))
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Crust)
+            .Include(store => store.Orders
+                .Where(o => o.UserEntityID == user.EntityID))
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Size)
+            .Include(store => store.Orders
+                .Where(o => o.UserEntityID == user.EntityID))
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Toppings)
+            .FirstOrDefault<Store>(s => s.EntityID == store.EntityID);
+            return orders.Orders.ToList();
         }
         public void SaveStore(Store store)
         {
@@ -114,8 +130,6 @@ namespace PizzaWorld.Client
                 {
                     if(input >= 0 && input < list.Count())
                     {
-                        //return APizzaPartFactory.MakeSize(list[input].ToString());
-                        //return list[input].Name;
                         return input;
                     }
                     else

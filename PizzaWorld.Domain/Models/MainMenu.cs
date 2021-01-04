@@ -8,6 +8,7 @@ namespace PizzaWorld.Domain.Models
         Order,
         ViewHistory,
         ViewStoreHistory,
+        AdminOptions,
         Quit
     }
 }

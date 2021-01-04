@@ -7,6 +7,8 @@ namespace PizzaWorld.Domain.Models
 {
     public class Order : AEntity
     {
+        public long StoreEntityID { get; set; }
+        public long UserEntityID { get; set; }
         public DateTime Date { get; set; }
         public List<Pizza> Pizzas { get; set; }
         public Order()

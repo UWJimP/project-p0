@@ -28,11 +28,31 @@ namespace PizzaWorld.Client
             var user = CreateUser();
             if(user.Name.ToLower().Trim() == "admin")
             {
-
+                AdminView(user);
             }
             else
             {
                 UserView(user);
+            }
+            Console.WriteLine("Thank you, have a nice day!");
+        }
+        private static void AdminView(User user)
+        {
+            bool runLoop = true;
+            MainMenu state = MainMenu.Stores;
+            while(runLoop)
+            {
+                switch(state)
+                {
+                    case MainMenu.Stores:
+                        state = SelectTheStore(user);
+                        break;
+                    case MainMenu.StoresOptions:
+                        break;
+                    default:
+                        runLoop = false;
+                        break;
+                }
             }
         }
         private static void UserView(User user)
@@ -43,23 +63,8 @@ namespace PizzaWorld.Client
             {
                 switch(state)
                 {
-                    /* case MainMenu.User: //Create a new user
-                        user = CreateUser();
-                        if(user == null)
-                        {
-                            runLoop = false;
-                        }
-                        state = MainMenu.Stores;
-                        break; */
                     case MainMenu.Stores: //Prints all stores and select a store.
-                        PrintItems<Store>(GetAllStores().ToList());
-                        Console.WriteLine("Please select a store by its given numbers or any other number to quit: ");
-                        user.SelectedStore = _sql.SelectStore();
-                        if(user.SelectedStore == null)
-                        {
-                            runLoop = false;
-                        }
-                        state = MainMenu.StoresOptions;
+                        state = SelectTheStore(user);
                         break;
                     case MainMenu.StoresOptions: //Give options with selected store.
                         PrintStoreOptions();
@@ -71,15 +76,18 @@ namespace PizzaWorld.Client
                         state = MainMenu.StoresOptions;
                         break;
                     case MainMenu.ViewHistory:
-                        ViewUserHistory(user);
+                        user.Orders = _sql.ReadUsersOrders(user.Name);
+                        ViewUserHistory(user.Orders);
                         state = MainMenu.StoresOptions;
                         break;
                     case MainMenu.ViewStoreHistory:
-                        var user_orders = _sql.ReadUsersOrdersByStore(user);
+                        var user_orders = _sql.ReadUsersOrdersFromStore(user);
+                        Console.WriteLine(user.Name);
                         if(user_orders == null || user_orders.Count == 0)
                         {
                             Console.WriteLine($"Sorry, you do not have any orders with {user.SelectedStore}.");
                         }
+                        ViewUserHistory(user_orders);
                         state = MainMenu.StoresOptions;
                         break;
                     default:
@@ -87,7 +95,6 @@ namespace PizzaWorld.Client
                         break;
                 }
             }
-            Console.WriteLine("Thank you, have a nice day!");
         }
         private static User CreateUser()
         {
@@ -100,17 +107,19 @@ namespace PizzaWorld.Client
                 user.Name = name.Trim();
                 _sql.SaveUser(user);
             }
-            else
-            {
-                /* Console.WriteLine("Found user");
-                List<Order> orders = _sql.ReadUsersOrders(name.Trim());
-                if(orders != null)
-                {
-                    user.Orders = orders;
-                } */
-            }
             Console.WriteLine(user);
             return user;
+        }
+        private static MainMenu SelectTheStore(User user)
+        {
+            PrintItems<Store>(GetAllStores().ToList());
+            Console.WriteLine("Please select a store by its given numbers or any other number to quit: ");
+            user.SelectedStore = _sql.SelectStore();
+            if(user.SelectedStore == null)
+            {
+                return MainMenu.Quit;
+            }
+            return MainMenu.StoresOptions;
         }
         private static void PrintItems<T>(List<T> list)
         {
@@ -126,6 +135,12 @@ namespace PizzaWorld.Client
             Console.WriteLine("3. View Your Order History with this Store");
             Console.WriteLine("4. Select another Store");
             Console.WriteLine("5. Quit");
+        }
+        private static void PrintAdminOptions()
+        {
+            Console.WriteLine("1. View Order History of User");
+            Console.WriteLine("2. View All Sales For Store");
+            Console.WriteLine("3. Select another Store");
         }
         private static MainMenu SelectStoreOption()
         {
@@ -355,26 +370,26 @@ namespace PizzaWorld.Client
                 }
             }
         }
-        private static void ViewUserHistory(User user)
+        private static void ViewUserHistory(List<Order> orders)
         {
-            if(user.Orders.Count <= 0)
+            if(orders.Count() <= 0)
             {
                 Console.WriteLine("You have no orders.");
             }
             else
             {
-                user.Orders = _sql.ReadUsersOrders(user.Name);
+                //user.Orders = _sql.ReadUsersOrders(user.Name);
                 bool continueInput = true;
                 while(continueInput)
                 {
-                    PrintItems<Order>(user.Orders);
+                    PrintItems<Order>(orders);
                     Console.WriteLine("Select an order number or any other number to return: ");
                     bool validInput = int.TryParse(Console.ReadLine(), out int input);
                     if(validInput)
                     {
-                        if(input >= 0 && input < user.Orders.Count())
+                        if(input >= 0 && input < orders.Count())
                         {
-                            var order = user.Orders[input];
+                            var order = orders[input];
                             Console.WriteLine($"Date: {order.Date}");
                             foreach(var pizza in order.Pizzas)
                             {
