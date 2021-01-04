@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PizzaWorld.Domain.Models;
 
 namespace PizzaWorld.Domain.Factory
@@ -52,6 +53,15 @@ namespace PizzaWorld.Domain.Factory
                 default:
                     return new Topping("cheese", 1d);
             }
+        }
+        public static List<Topping> GetToppings()
+        {
+            return new List<Topping>()
+            {
+                new Topping("cheese", 1d), new Topping("pepperoni"), new Topping("sausage"),
+                new Topping("pineapple"), new Topping("ham"), new Topping("onion"),
+                new Topping("mushroom"), new Topping("olive"), new Topping("sauce", 2d)
+            };
         }
     }
 }

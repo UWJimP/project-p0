@@ -2,7 +2,7 @@
 
 namespace PizzaWorld.Storing.Migrations
 {
-    public partial class fixinglists : Migration
+    public partial class removedtoppingseeds : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

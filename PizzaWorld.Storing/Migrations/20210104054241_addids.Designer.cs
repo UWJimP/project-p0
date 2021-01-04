@@ -10,8 +10,8 @@ using PizzaWorld.Storing;
 namespace PizzaWorld.Storing.Migrations
 {
     [DbContext(typeof(PizzaWorldContext))]
-    [Migration("20210101110811_settingvalues")]
-    partial class settingvalues
+    [Migration("20210104054241_addids")]
+    partial class addids
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -69,17 +69,17 @@ namespace PizzaWorld.Storing.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<long?>("StoreEntityID")
+                    b.Property<long>("StoreID")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("UserEntityID")
+                    b.Property<long>("UserID")
                         .HasColumnType("bigint");
 
                     b.HasKey("EntityID");
 
-                    b.HasIndex("StoreEntityID");
+                    b.HasIndex("StoreID");
 
-                    b.HasIndex("UserEntityID");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Order");
                 });
@@ -135,18 +135,18 @@ namespace PizzaWorld.Storing.Migrations
                         new
                         {
                             EntityID = 1L,
-                            Name = "small",
+                            Name = "regular",
                             Price = 1.0
                         },
                         new
                         {
-                            EntityID = 3L,
+                            EntityID = 2L,
                             Name = "medium",
                             Price = 2.0
                         },
                         new
                         {
-                            EntityID = 2L,
+                            EntityID = 3L,
                             Name = "large",
                             Price = 3.0
                         });
@@ -210,62 +210,6 @@ namespace PizzaWorld.Storing.Migrations
                     b.HasIndex("PizzaEntityID");
 
                     b.ToTable("Toppings");
-
-                    b.HasData(
-                        new
-                        {
-                            EntityID = 1L,
-                            Name = "cheese",
-                            Price = 1.0
-                        },
-                        new
-                        {
-                            EntityID = 2L,
-                            Name = "pepperoni",
-                            Price = 0.75
-                        },
-                        new
-                        {
-                            EntityID = 3L,
-                            Name = "sausage",
-                            Price = 0.75
-                        },
-                        new
-                        {
-                            EntityID = 4L,
-                            Name = "pineapple",
-                            Price = 0.75
-                        },
-                        new
-                        {
-                            EntityID = 5L,
-                            Name = "ham",
-                            Price = 0.75
-                        },
-                        new
-                        {
-                            EntityID = 6L,
-                            Name = "onion",
-                            Price = 0.75
-                        },
-                        new
-                        {
-                            EntityID = 7L,
-                            Name = "mushroom",
-                            Price = 0.75
-                        },
-                        new
-                        {
-                            EntityID = 8L,
-                            Name = "olive",
-                            Price = 0.75
-                        },
-                        new
-                        {
-                            EntityID = 9L,
-                            Name = "sauce",
-                            Price = 2.0
-                        });
                 });
 
             modelBuilder.Entity("PizzaWorld.Domain.Models.User", b =>
@@ -281,17 +225,28 @@ namespace PizzaWorld.Storing.Migrations
                     b.HasKey("EntityID");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            EntityID = 1L,
+                            Name = "admin"
+                        });
                 });
 
             modelBuilder.Entity("PizzaWorld.Domain.Models.Order", b =>
                 {
                     b.HasOne("PizzaWorld.Domain.Models.Store", null)
                         .WithMany("Orders")
-                        .HasForeignKey("StoreEntityID");
+                        .HasForeignKey("StoreID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PizzaWorld.Domain.Models.User", null)
                         .WithMany("Orders")
-                        .HasForeignKey("UserEntityID");
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("PizzaWorld.Domain.Models.Pizza", b =>

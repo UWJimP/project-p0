@@ -45,20 +45,30 @@ namespace PizzaWorld.Client
         public List<Order> ReadUsersOrders(string name)
         {
             //return _db.Users.FirstOrDefault<User>(u => u.Name == name).Orders;
-            var test = _db.Users
-            .Include(user => user.Orders)
-            .ThenInclude(order => order.Pizzas).ToList();
             var orders = _db.Users
+/*             .Include(user => user.Orders)
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Toppings)
             .Include(user => user.Orders)
-            .ThenInclude(order => order.Pizzas)
-            .ThenInclude(pizza => pizza.Toppings)
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Crust) */
             .Include(user => user.Orders)
-            .ThenInclude(order => order.Pizzas)
-            .ThenInclude(pizza => pizza.Crust)
-            .Include(user => user.Orders)
-            .ThenInclude(order => order.Pizzas)
-            .ThenInclude(pizza => pizza.Size)
+                .ThenInclude(order => order.Pizzas)
+                    .ThenInclude(pizza => pizza.Size)
             .FirstOrDefault<User>(user => user.Name == name);
+            return orders.Orders;
+        }
+        public List<Pizza> ReadPizzasByOrder(Order order)
+        {
+            var test = _db.Find<Order>(order.EntityID);
+            return test.Pizzas;
+        }
+        public List<Order> ReadOrdersByStore(Store store)
+        {
+            var orders = _db.Stores
+            .Include(s => s.Orders)
+                .ThenInclude(o => o.Pizzas)
+            .FirstOrDefault<Store>(s => s.Name == store.Name);
             return orders.Orders;
         }
         public List<Order> ReadTestOrders(string name)

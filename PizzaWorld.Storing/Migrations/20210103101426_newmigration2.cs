@@ -2,7 +2,7 @@
 
 namespace PizzaWorld.Storing.Migrations
 {
-    public partial class settingvalues : Migration
+    public partial class newmigration2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

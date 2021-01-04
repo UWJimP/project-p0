@@ -7,8 +7,8 @@ namespace PizzaWorld.Domain.Models
 {
     public class Pizza : AEntity
     {
-        public Crust Crust { get; set; }
-        public Size Size { get; set; }
+        public virtual Crust Crust { get; set; }
+        public virtual Size Size { get; set; }
         public string Name { get; set; }
         public virtual List<Topping> Toppings { get; set; }
         public Pizza()

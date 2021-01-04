@@ -10,8 +10,8 @@ using PizzaWorld.Storing;
 namespace PizzaWorld.Storing.Migrations
 {
     [DbContext(typeof(PizzaWorldContext))]
-    [Migration("20201228025245_test new")]
-    partial class testnew
+    [Migration("20210103235317_newmigration3")]
+    partial class newmigration3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,7 +36,7 @@ namespace PizzaWorld.Storing.Migrations
 
                     b.HasKey("EntityID");
 
-                    b.ToTable("Crust");
+                    b.ToTable("Crusts");
 
                     b.HasData(
                         new
@@ -91,22 +91,25 @@ namespace PizzaWorld.Storing.Migrations
                         .HasColumnType("bigint")
                         .UseIdentityColumn();
 
-                    b.Property<long?>("CrustID")
+                    b.Property<long?>("CrustEntityID")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("OrderEntityID")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("SizeID")
+                    b.Property<long?>("SizeEntityID")
                         .HasColumnType("bigint");
 
                     b.HasKey("EntityID");
 
-                    b.HasIndex("CrustID");
+                    b.HasIndex("CrustEntityID");
 
                     b.HasIndex("OrderEntityID");
 
-                    b.HasIndex("SizeID");
+                    b.HasIndex("SizeEntityID");
 
                     b.ToTable("Pizza");
                 });
@@ -126,24 +129,24 @@ namespace PizzaWorld.Storing.Migrations
 
                     b.HasKey("EntityID");
 
-                    b.ToTable("Size");
+                    b.ToTable("Sizes");
 
                     b.HasData(
                         new
                         {
                             EntityID = 1L,
-                            Name = "small",
+                            Name = "regular",
                             Price = 1.0
                         },
                         new
                         {
-                            EntityID = 3L,
+                            EntityID = 2L,
                             Name = "medium",
                             Price = 2.0
                         },
                         new
                         {
-                            EntityID = 2L,
+                            EntityID = 3L,
                             Name = "large",
                             Price = 3.0
                         });
@@ -206,7 +209,7 @@ namespace PizzaWorld.Storing.Migrations
 
                     b.HasIndex("PizzaEntityID");
 
-                    b.ToTable("Topping");
+                    b.ToTable("Toppings");
 
                     b.HasData(
                         new
@@ -275,12 +278,7 @@ namespace PizzaWorld.Storing.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("SelectedStoreEntityID")
-                        .HasColumnType("bigint");
-
                     b.HasKey("EntityID");
-
-                    b.HasIndex("SelectedStoreEntityID");
 
                     b.ToTable("Users");
                 });
@@ -300,7 +298,7 @@ namespace PizzaWorld.Storing.Migrations
                 {
                     b.HasOne("PizzaWorld.Domain.Models.Crust", "Crust")
                         .WithMany()
-                        .HasForeignKey("CrustID");
+                        .HasForeignKey("CrustEntityID");
 
                     b.HasOne("PizzaWorld.Domain.Models.Order", null)
                         .WithMany("Pizzas")
@@ -308,7 +306,7 @@ namespace PizzaWorld.Storing.Migrations
 
                     b.HasOne("PizzaWorld.Domain.Models.Size", "Size")
                         .WithMany()
-                        .HasForeignKey("SizeID");
+                        .HasForeignKey("SizeEntityID");
 
                     b.Navigation("Crust");
 
@@ -320,15 +318,6 @@ namespace PizzaWorld.Storing.Migrations
                     b.HasOne("PizzaWorld.Domain.Models.Pizza", null)
                         .WithMany("Toppings")
                         .HasForeignKey("PizzaEntityID");
-                });
-
-            modelBuilder.Entity("PizzaWorld.Domain.Models.User", b =>
-                {
-                    b.HasOne("PizzaWorld.Domain.Models.Store", "SelectedStore")
-                        .WithMany()
-                        .HasForeignKey("SelectedStoreEntityID");
-
-                    b.Navigation("SelectedStore");
                 });
 
             modelBuilder.Entity("PizzaWorld.Domain.Models.Order", b =>
