@@ -10,6 +10,7 @@ using PizzaWorld.Storing;
 namespace PizzaWorld.Storing.Migrations
 {
     [DbContext(typeof(PizzaWorldContext))]
+<<<<<<< HEAD:PizzaWorld.Storing/Migrations/20210103101426_newmigration2.Designer.cs~merged
 <<<<<<< HEAD
 <<<<<<< HEAD:PizzaWorld.Storing/Migrations/20210103101426_newmigration2.Designer.cs
     [Migration("20210103101426_newmigration2")]
@@ -22,6 +23,10 @@ namespace PizzaWorld.Storing.Migrations
     [Migration("20210103101426_newmigration2")]
     partial class newmigration2
 >>>>>>> a9f769c21f857bcc12fa08093d5e3ad042aa4e9a
+=======
+    [Migration("20210103235317_newmigration3")]
+    partial class newmigration3
+>>>>>>> a9f769c21f857bcc12fa08093d5e3ad042aa4e9a:PizzaWorld.Storing/Migrations/20210103235317_newmigration3.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
