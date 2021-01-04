@@ -13,33 +13,65 @@ namespace PizzaWorld.Client
         private static readonly ClientSingleton _client = ClientSingleton.Instance;
         private static readonly SqlClient _sql = new SqlClient();
         public Program(){}
-
         static void Main(string[] args)
         {
-            UserView();
+            EntryView();
         }
-
         private static IEnumerable<Store> GetAllStores()
         {
             return _sql.ReadStores();
         }
-        private static void UserView()
+        private static void EntryView()
         {
-            User user = null;
+            var user = CreateUser();
+            if(user.Name.ToLower() == "admin")
+            {
+                AdminView();
+            }
+            else
+            {
+                UserView(user);
+            }
+        }
+        private static void AdminView()
+        {
             bool runLoop = true;
-            MainMenu state = MainMenu.User;
+            MainMenu state = MainMenu.AdminOptions;
             while(runLoop)
             {
                 switch(state)
                 {
-                    case MainMenu.User: //Create a new user
+                    case MainMenu.AdminOptions:
+                        state = SelectAdminOptions();
+                        break;
+                    case MainMenu.AdminOrderHistory:
+                        break;
+                    case MainMenu.AdminSalesHistory:
+                        break;
+                    default:
+                        runLoop = false;
+                        break;
+                }
+            }
+        }
+        private static void UserView(User user)
+        {
+            //User user = null;
+            bool runLoop = true;
+            //MainMenu state = MainMenu.User;
+            MainMenu state = MainMenu.Stores;
+            while(runLoop)
+            {
+                switch(state)
+                {
+/*                     case MainMenu.User: //Create a new user
                         user = CreateUser();
                         if(user == null)
                         {
                             runLoop = false;
                         }
                         state = MainMenu.Stores;
-                        break;
+                        break; */
                     case MainMenu.Stores: //Prints all stores and select a store.
                         //PrintAllStores();
                         PrintItems<Store>(GetAllStores().ToList());
@@ -95,11 +127,16 @@ namespace PizzaWorld.Client
             }
             else
             {
-                Console.WriteLine("Found user");
+                //Console.WriteLine("Found user");
                 List<Order> orders = _sql.ReadUsersOrders(name.Trim());
                 if(orders != null)
                 {
+                    var store = _sql.ReadStores().ToList()[0];
+                    var test1 = _sql.ReadOrdersByStore(store);
                     user.Orders = orders;
+                    var order = orders[0];
+                    var pizza = _sql.ReadPizzasByOrder(order);
+                    Console.WriteLine(pizza);
                 }
             }
             Console.WriteLine(user);
@@ -119,6 +156,40 @@ namespace PizzaWorld.Client
             Console.WriteLine("3. View Your Order History with this Store");
             Console.WriteLine("4. Select another Store");
             Console.WriteLine("5. Quit");
+        }
+        private static void PrintAdminOptions()
+        {
+            Console.WriteLine("1. ");
+            Console.WriteLine("2. ");
+            Console.WriteLine("3. Quit");
+        }
+        private static MainMenu SelectAdminOptions()
+        {
+            while(true)
+            {
+                PrintAdminOptions();
+                Console.WriteLine("Please select one of these options: ");
+                bool validInput = int.TryParse(Console.ReadLine(), out int input);
+                if(validInput)
+                {
+                    switch(input)
+                    {
+                        case 1:
+                            return MainMenu.AdminOrderHistory;
+                        case 2:
+                            return MainMenu.AdminSalesHistory;
+                        case 3:
+                            return MainMenu.Quit;
+                        default:
+                            Console.WriteLine("Invalid number input, try again: ");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input, please put in a number.");
+                }
+            }
         }
         private static MainMenu SelectStoreOption()
         {
@@ -267,7 +338,7 @@ namespace PizzaWorld.Client
         }
         private static void AddToppings(Pizza pizza)
         {
-            List<Topping> toppings = _sql.ReadToppings().ToList();
+            List<Topping> toppings = APizzaPartFactory.GetToppings();
             Console.WriteLine("Current toppings: ");
             foreach(var topping in pizza.Toppings)
             {

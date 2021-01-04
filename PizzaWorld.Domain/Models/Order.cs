@@ -7,12 +7,17 @@ namespace PizzaWorld.Domain.Models
 {
     public class Order : AEntity
     {
+        public long StoreID { get; set; }
+        public long UserID { get; set; }
         public DateTime Date { get; set; }
-        public List<Pizza> Pizzas { get; set; }
+        public virtual List<Pizza> Pizzas { get; set; }
         public Order()
         {
             Date = DateTime.Now;
-            Pizzas = new List<Pizza>();
+            if(Pizzas == null)
+            {
+                Pizzas = new List<Pizza>();
+            }
         }
         public bool AddPizza(Pizza pizza)
         {

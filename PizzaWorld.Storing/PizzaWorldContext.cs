@@ -14,35 +14,40 @@ namespace PizzaWorld.Storing
         public DbSet<Topping> Toppings { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            var connection = "Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorld2;User ID=sqladmin;Password=;";
+            //var connection = "Server=jimpizzaworld.database.windows.net,1433;Initial Catalog=PizzaWorld2;User ID=sqladmin;Password=Momo0Kagami;";
+            var connection = "Server=jimpizzaprojectdb.database.windows.net,1433;Initial Catalog=JimPizzaProjectDB;User ID=sqladmin;Password=;";
             builder.UseSqlServer(connection);
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Store>().HasKey(store => store.EntityID);
-            //builder.Entity<Store>().HasMany(store => store.Orders);
-            
+            builder.Entity<Store>().HasMany(store => store.Orders);
+
+            builder.Entity<Order>().HasMany(order => order.Pizzas);
+
             builder.Entity<User>().HasKey(user => user.EntityID);
-            //builder.Entity<User>().HasMany(user => user.Orders);
-            
+            builder.Entity<User>().HasMany(user => user.Orders);
+
+            builder.Entity<Pizza>().HasKey(pizza => pizza.EntityID);
+            builder.Entity<Pizza>().HasOne(pizza => pizza.Crust);
+            builder.Entity<Pizza>().HasOne(pizza => pizza.Size);
+            builder.Entity<Pizza>().HasMany(pizza => pizza.Toppings);
+
             builder.Entity<Topping>().HasKey(topping => topping.EntityID);
-            
             builder.Entity<Crust>().HasKey(crust => crust.EntityID);
-            
             builder.Entity<Size>().HasKey(size => size.EntityID);
 
-            builder.Entity<Order>().HasKey(order => order.EntityID);
-            // builder.Entity<Order>().HasMany(order => order.Pizzas);
-            
-            builder.Entity<Pizza>().HasKey(pizza => pizza.EntityID);
-            // builder.Entity<Pizza>().OwnsOne(pizza => pizza.Crust);
-            // builder.Entity<Pizza>().OwnsOne(pizza => pizza.Size);
-            // builder.Entity<Pizza>().HasMany(pizza => pizza.Toppings);
-
+            SeedUserData(builder);
             SeedStoreData(builder);
-            SeedToppingData(builder);
             SeedSizeData(builder);
             SeedCrustData(builder);
+        }
+        private void SeedUserData(ModelBuilder builder)
+        {
+            builder.Entity<User>().HasData(new List<User>()
+            {
+                new User() { EntityID = 1, Name = "admin" }
+            });
         }
         private void SeedToppingData(ModelBuilder builder)
         {

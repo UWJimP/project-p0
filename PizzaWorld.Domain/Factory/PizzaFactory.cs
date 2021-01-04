@@ -15,25 +15,27 @@ namespace PizzaWorld.Domain.Factory
         {
             var madePizza = new Pizza();
             madePizza.Name = pizza.ToLower();
-            madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "cheese"));
-            madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "sauce"));
+            //madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "cheese"));
+            //madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "sauce"));
+            madePizza.AddTopping(APizzaPartFactory.MakeTopping("cheese"));
+            madePizza.AddTopping(APizzaPartFactory.MakeTopping("sauce"));
             switch(pizza.ToLower())
             {
                 case "pepperoni":
-                    //madePizza.AddTopping(APizzaPartFactory.MakeTopping("pepperoni"));
-                    madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "pepperoni"));
+                    madePizza.AddTopping(APizzaPartFactory.MakeTopping("pepperoni"));
+                    //madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "pepperoni"));
                     return madePizza;
                 case "combo":
-                    //madePizza.AddTopping(APizzaPartFactory.MakeTopping("pepperoni"));
-                    //madePizza.AddTopping(APizzaPartFactory.MakeTopping("sausage"));
-                    madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "pepperoni"));
-                    madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "sausage"));
+                    madePizza.AddTopping(APizzaPartFactory.MakeTopping("pepperoni"));
+                    madePizza.AddTopping(APizzaPartFactory.MakeTopping("sausage"));
+                    //madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "pepperoni"));
+                    //madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "sausage"));
                     return madePizza;
                 case "hawaiian":
-                    //madePizza.AddTopping(APizzaPartFactory.MakeTopping("pineapple"));
-                    //madePizza.AddTopping(APizzaPartFactory.MakeTopping("ham"));
-                    madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "pineapple"));
-                    madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "ham"));
+                    madePizza.AddTopping(APizzaPartFactory.MakeTopping("pineapple"));
+                    madePizza.AddTopping(APizzaPartFactory.MakeTopping("ham"));
+                    //madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "pineapple"));
+                    //madePizza.AddTopping(toppings.FirstOrDefault<Topping>(topping => topping.Name == "ham"));
                     return madePizza;
                 default:
                     madePizza.Name = "cheese";
