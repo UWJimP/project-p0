@@ -71,15 +71,7 @@ namespace PizzaWorld.Client
                         state = MainMenu.StoresOptions;
                         break;
                     case MainMenu.ViewHistory:
-                        if(user.Orders.Count <= 0)
-                        {
-                            Console.WriteLine("You have no orders.");
-                        }
-                        else
-                        {
-                            user.Orders = _sql.ReadUsersOrders(user.Name);
-                            PrintItems<Order>(user.Orders);
-                        }
+                        ViewUserHistory(user);
                         state = MainMenu.StoresOptions;
                         break;
                     case MainMenu.ViewStoreHistory:
@@ -360,6 +352,41 @@ namespace PizzaWorld.Client
                 else
                 {
                     Console.WriteLine("Invalid input, try again.");
+                }
+            }
+        }
+        private static void ViewUserHistory(User user)
+        {
+            if(user.Orders.Count <= 0)
+            {
+                Console.WriteLine("You have no orders.");
+            }
+            else
+            {
+                user.Orders = _sql.ReadUsersOrders(user.Name);
+                bool continueInput = true;
+                while(continueInput)
+                {
+                    PrintItems<Order>(user.Orders);
+                    Console.WriteLine("Select an order number or any other number to return: ");
+                    bool validInput = int.TryParse(Console.ReadLine(), out int input);
+                    if(validInput)
+                    {
+                        if(input >= 0 && input < user.Orders.Count())
+                        {
+                            var order = user.Orders[input];
+                            Console.WriteLine($"Date: {order.Date}");
+                            foreach(var pizza in order.Pizzas)
+                            {
+                                Console.WriteLine($"Pizza: {pizza}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input, please try again.");
+                        }
+                    }
+                    continueInput = ConfirmationInput("Would you like to look at another order?");
                 }
             }
         }

@@ -27,7 +27,8 @@ namespace PizzaWorld.Domain.Models
                 return true;
             }
             TimeSpan lastOrderTime = order.Date - Orders.Last().Date;
-            if(lastOrderTime.Minutes > 120)
+            TimeSpan checkTime = new TimeSpan(2, 0, 0);
+            if(TimeSpan.Compare(lastOrderTime, checkTime) == 1)
             {
                 Orders.Add(order);
                 return true;
