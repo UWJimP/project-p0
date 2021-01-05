@@ -48,6 +48,15 @@ namespace PizzaWorld.Client
                         state = SelectTheStore(user);
                         break;
                     case MainMenu.StoresOptions:
+                        state = SelectAdminStoreOption();
+                        break;
+                    case MainMenu.AdminViewOrders:
+                        AdminViewUserOrders(user);
+                        state = MainMenu.StoresOptions;
+                        break;
+                    case MainMenu.AdminViewSales:
+                        _sql.PrintSalesByStore(user.SelectedStore);
+                        state = MainMenu.StoresOptions;
                         break;
                     default:
                         runLoop = false;
@@ -87,7 +96,10 @@ namespace PizzaWorld.Client
                         {
                             Console.WriteLine($"Sorry, you do not have any orders with {user.SelectedStore}.");
                         }
-                        ViewUserHistory(user_orders);
+                        else
+                        {
+                            ViewUserHistory(user_orders);
+                        }
                         state = MainMenu.StoresOptions;
                         break;
                     default:
@@ -141,6 +153,37 @@ namespace PizzaWorld.Client
             Console.WriteLine("1. View Order History of User");
             Console.WriteLine("2. View All Sales For Store");
             Console.WriteLine("3. Select another Store");
+            Console.WriteLine("4. Quit");
+        }
+        private static MainMenu SelectAdminStoreOption()
+        {
+            while(true)
+            {
+                PrintAdminOptions();
+                Console.WriteLine("Please select one of the options: ");
+                bool validInput = int.TryParse(Console.ReadLine(), out int input);
+                if(validInput)
+                {
+                    switch(input)
+                    {
+                        case 1:
+                            return MainMenu.AdminViewOrders;
+                        case 2:
+                            return MainMenu.AdminViewSales;
+                        case 3:
+                            return MainMenu.Stores;
+                        case 4:
+                            return MainMenu.Quit;
+                        default:
+                            Console.WriteLine("Invalid choice, try again.");
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input, please put in a number.");
+                }                
+            }
         }
         private static MainMenu SelectStoreOption()
         {
@@ -378,7 +421,6 @@ namespace PizzaWorld.Client
             }
             else
             {
-                //user.Orders = _sql.ReadUsersOrders(user.Name);
                 bool continueInput = true;
                 while(continueInput)
                 {
@@ -402,6 +444,28 @@ namespace PizzaWorld.Client
                         }
                     }
                     continueInput = ConfirmationInput("Would you like to look at another order?");
+                }
+            }
+        }
+        private static void AdminViewUserOrders(User user)
+        {
+            Console.WriteLine("Enter a user name: ");
+            var name = Console.ReadLine().Trim();
+            var db_user = _sql.ReadOneUser(name);
+            if(db_user == null)
+            {
+                Console.WriteLine("Sorry, user not found.");
+            }
+            else
+            {
+                var orders = _sql.ReadStoreOrdersByUser(user.SelectedStore, db_user);
+                if(orders == null || orders.Count() == 0)
+                {
+                    Console.WriteLine("Sorry, user does not have orders with this store.");
+                }
+                else
+                {
+                    ViewUserHistory(orders);
                 }
             }
         }

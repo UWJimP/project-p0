@@ -30,9 +30,7 @@ namespace PizzaWorld.Client
         }
         public User ReadOneUser(string name)
         {
-            return _db.Users.Include(user => user.Orders).
-            ThenInclude(order => order.Pizzas).
-            FirstOrDefault<User>(user => user.Name == name);
+            return _db.Users.FirstOrDefault<User>(user => user.Name == name);
         }
         public Store ReadOneStore(string name)
         {
@@ -86,6 +84,47 @@ namespace PizzaWorld.Client
                     .ThenInclude(pizza => pizza.Toppings)
             .FirstOrDefault<Store>(s => s.EntityID == store.EntityID);
             return orders.Orders.ToList();
+        }
+        public void PrintSalesByStore(Store store)
+        {
+            var week = DateTime.Now.AddDays(-7);
+            var today = DateTime.Now;
+            var orders = _db.Stores
+            .Include(s => s.Orders
+                .Where(o => o.Date >= week && o.Date <= today))
+                .ThenInclude(o => o.Pizzas)
+                    .ThenInclude(o => o.Size)
+            .Include(s => s.Orders
+                .Where(o => o.Date >= week && o.Date <= today))
+                .ThenInclude(o => o.Pizzas)
+                    .ThenInclude(o => o.Crust)
+            .Include(s => s.Orders
+                .Where(o => o.Date >= week && o.Date <= today))
+                .ThenInclude(o => o.Pizzas)
+                    .ThenInclude(o => o.Toppings)
+            .FirstOrDefault<Store>(s => s.EntityID == store.EntityID).Orders.ToList();
+            Dictionary<string, int> pizzaCount = new Dictionary<string, int>();
+            var amount = 0d;
+            foreach(var order in orders)
+            {
+                amount += order.GetTotalAmount();
+                foreach(var pizza in order.Pizzas)
+                {
+                    if(pizzaCount.ContainsKey(pizza.Name))
+                    {
+                        pizzaCount[pizza.Name] += 1;
+                    }
+                    else
+                    {
+                        pizzaCount.Add(pizza.Name, 1);
+                    }
+                }
+            }
+            foreach(var pizzaKey in pizzaCount.Keys)
+            {
+                Console.WriteLine($"Pizza Type: {pizzaKey} Amount: {pizzaCount[pizzaKey]}");
+            }
+            Console.WriteLine($"Total Sales Amount: ${amount}");
         }
         public void SaveStore(Store store)
         {
