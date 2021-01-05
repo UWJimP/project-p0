@@ -125,6 +125,7 @@ namespace PizzaWorld.Client
                 Console.WriteLine($"Pizza Type: {pizzaKey} Amount: {pizzaCount[pizzaKey]}");
             }
             Console.WriteLine($"Total Sales Amount: ${amount}");
+            Console.WriteLine();
         }
         public void SaveStore(Store store)
         {
